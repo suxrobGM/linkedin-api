@@ -1,6 +1,6 @@
 ﻿using LinkedIn.Api.Exceptions;
 using LinkedIn.Api.People;
-using LinkedIn.Api.SocialAction;
+using LinkedIn.Api.SocialActions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -81,14 +81,13 @@ namespace LinkedIn.Api
             return profile;
         }
 
-        //public async Task<JObject> GetCompaniesAsync()
-        //{
-        //    CheckTokenThenAddToHeaders();
-        //    //var respone = await _client.GetAsync($"{_apiHost}v2/organizations");
-        //    var response = await _client.GetAsync($"{_apiHost}v2/organizationalEntityAcls?q=roleAssignee");
-        //    string jsonData = await response.Content.ReadAsStringAsync();
-        //    return JObject.Parse(await response.Content.ReadAsStringAsync());
-        //}
+        public async Task<JObject> GetCompaniesAsync()
+        {
+            CheckTokenThenAddToHeaders();
+            var response = await _client.GetAsync($"{_apiHost}v2/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR");
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return JObject.Parse(await response.Content.ReadAsStringAsync());
+        }
 
         public async Task PostOnOwnProfileAsync(Share share)
         {
@@ -111,14 +110,19 @@ namespace LinkedIn.Api
         /// </summary>
         /// <param name="sharesPerOwner"></param>
         /// <returns></returns>
-        public async Task GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
+        public async Task<Share[]> GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
         {
             var selfProfile = await GetOwnProfileAsync();
             var owner = $"urn:li:person:{selfProfile.Id}";
             var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var jObject = JObject.Parse(responseJson);
+            var shares = JsonConvert.DeserializeObject<Share[]>(jObject["elements"].ToString());
 
             if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+                throw new ApiException(ExceptionModel.FromJson(responseJson));
+
+            return shares;
         }
 
         //public List<string> GetPostsOnCompanyProfile()

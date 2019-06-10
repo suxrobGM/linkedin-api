@@ -23,11 +23,11 @@ namespace LinkedIn.Api.Exceptions
 
     public partial class ExceptionModel
     {
-        public static ExceptionModel FromJson(string json) => JsonConvert.DeserializeObject<ExceptionModel>(json, JsonConverter.Settings);
+        public static ExceptionModel FromJson(string json) => JsonConvert.DeserializeObject<ExceptionModel>(json, CustomConverter.Settings);
     }
 
-    public static class Serialize
+    public static class ExceptionModelSerialize
     {
-        public static string ToJson(this ExceptionModel self) => JsonConvert.SerializeObject(self, JsonConverter.Settings);
+        public static string ToJson(this ExceptionModel self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
     }
 }

@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace LinkedIn.Api
 {
-    internal static class JsonConverter
+    internal static class CustomConverter
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {

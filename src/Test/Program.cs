@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using LinkedIn.Api;
-using LinkedIn.Api.SocialAction;
+using LinkedIn.Api.SocialActions;
 
 namespace Test
 {
@@ -23,6 +23,7 @@ namespace Test
             //var share = Share.FromJson(shareJson);
             //client.PostOnOwnProfileAsync(share).Wait();
             //client.GetPostsOnOwnProfileAsync().Wait();
+            client.GetCompaniesAsync().Wait();
 
             Console.WriteLine("\nFinished!");
             Console.ReadKey();

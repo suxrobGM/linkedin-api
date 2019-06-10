@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace LinkedIn.Api.SocialAction
+namespace LinkedIn.Api.SocialActions
 {
     public partial class Share
     {
@@ -102,11 +102,11 @@ namespace LinkedIn.Api.SocialAction
 
     public partial class Share
     {
-        public static Share FromJson(string json) => JsonConvert.DeserializeObject<Share>(json, JsonConverter.Settings);
+        public static Share FromJson(string json) => JsonConvert.DeserializeObject<Share>(json, CustomConverter.Settings);
     }
 
-    public static class Serialize
+    public static class ShareSerialize
     {
-        public static string ToJson(this Share self) => JsonConvert.SerializeObject(self, JsonConverter.Settings);
+        public static string ToJson(this Share self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
     }    
 }
