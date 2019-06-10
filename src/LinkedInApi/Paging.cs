@@ -19,11 +19,11 @@ namespace LinkedIn.Api
 
     public partial class Paging
     {
-        public static Paging FromJson(string json) => JsonConvert.DeserializeObject<Paging>(json, CustomConverter.Settings);
+        public static Paging FromJson(string json) => JsonConvert.DeserializeObject<Paging>(json, CustomJsonConverter.Settings);
     }
 
     public static class PagingSerialize
     {
-        public static string ToJson(this Paging self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
+        public static string ToJson(this Paging self) => JsonConvert.SerializeObject(self, CustomJsonConverter.Settings);
     }
 }

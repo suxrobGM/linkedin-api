@@ -102,11 +102,11 @@ namespace LinkedIn.Api.SocialActions
 
     public partial class Share
     {
-        public static Share FromJson(string json) => JsonConvert.DeserializeObject<Share>(json, CustomConverter.Settings);
+        public static Share FromJson(string json) => JsonConvert.DeserializeObject<Share>(json, CustomJsonConverter.Settings);
     }
 
     public static class ShareSerialize
     {
-        public static string ToJson(this Share self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
+        public static string ToJson(this Share self) => JsonConvert.SerializeObject(self, CustomJsonConverter.Settings);
     }    
 }

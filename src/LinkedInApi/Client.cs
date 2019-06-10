@@ -1,10 +1,11 @@
 ﻿using LinkedIn.Api.Exceptions;
+using LinkedIn.Api.Organizations;
 using LinkedIn.Api.People;
 using LinkedIn.Api.SocialActions;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -81,12 +82,41 @@ namespace LinkedIn.Api
             return profile;
         }
 
-        public async Task<JObject> GetCompaniesAsync()
+        public async Task<Organization[]> GetCompaniesAsync()
         {
             CheckTokenThenAddToHeaders();
             var response = await _client.GetAsync($"{_apiHost}v2/organizationalEntityAcls?q=roleAssignee&role=ADMINISTRATOR");
             var responseJson = await response.Content.ReadAsStringAsync();
-            return JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+
+            var organizationalEntityAcls = EntityElements<OrganizationalAccess>.FromJson(responseJson);
+            var ownCompaniesId = new List<long>();
+
+            foreach (var element in organizationalEntityAcls.Elements)
+            {
+                if (element.Role == "ADMINISTRATOR" && element.State == "APPROVED")
+                {
+                    long id = long.Parse(element.OrganizationalTarget.Split(':').Last());
+                    ownCompaniesId.Add(id);
+                }              
+            }
+
+            var companiesList = new List<Organization>();
+
+            foreach (var companyId in ownCompaniesId)
+            {
+                response = await _client.GetAsync($"{_apiHost}v2/organizations/{companyId}");
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+
+                responseJson = await response.Content.ReadAsStringAsync();
+                companiesList.Add(Organization.FromJson(responseJson));
+            }
+
+            return companiesList.ToArray();
         }
 
         public async Task PostOnOwnProfileAsync(Share share)
@@ -94,41 +124,59 @@ namespace LinkedIn.Api
             var selfProfile = await GetOwnProfileAsync();
             share.Owner = $"urn:li:person:{selfProfile.Id}";
             var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{_apiHost}v2/shares1", content);
+            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
 
             if (!response.IsSuccessStatusCode)
                 throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
         }
 
-        //public string PostOnCompanyProfile()
-        //{
+        public async Task PostOnCompanyProfileAsync(Share share, string ownCompanyId)
+        {
+            share.Owner = $"urn:li:organization:{ownCompanyId}";
+            var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
 
-        //}
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+        }
 
         /// <summary>
         /// If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.
         /// </summary>
         /// <param name="sharesPerOwner"></param>
         /// <returns></returns>
-        public async Task<Share[]> GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
+        public async Task<EntityElements<Share>> GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
         {
             var selfProfile = await GetOwnProfileAsync();
             var owner = $"urn:li:person:{selfProfile.Id}";
             var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
             var responseJson = await response.Content.ReadAsStringAsync();
-            var jObject = JObject.Parse(responseJson);
-            var shares = JsonConvert.DeserializeObject<Share[]>(jObject["elements"].ToString());
-
+            var shares = EntityElements<Share>.FromJson(responseJson);
+            
             if (!response.IsSuccessStatusCode)
                 throw new ApiException(ExceptionModel.FromJson(responseJson));
 
             return shares;
         }
 
-        //public List<string> GetPostsOnCompanyProfile()
-        //{
+        /// <summary>
+        /// If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.
+        /// </summary>
+        /// <param name="sharesPerOwner"></param>
+        /// <param name="ownCompanyId">Company id which have ADMINISTRATOR role</param>
+        /// <returns></returns>
+        public async Task<EntityElements<Share>> GetPostsOnCompanyProfileAsync(string ownCompanyId, int sharesPerOwner = 100)
+        {
+            var owner = $"urn:li:organization:{ownCompanyId}";
+            var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var shares = EntityElements<Share>.FromJson(responseJson);
 
-        //}
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(responseJson));
+
+            return shares;
+        }
 
         private void CheckTokenThenAddToHeaders()
         {

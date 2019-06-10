@@ -64,11 +64,11 @@ namespace LinkedIn.Api.People
 
     public partial class Profile
     {
-        public static Profile FromJson(string json) => JsonConvert.DeserializeObject<Profile>(json, CustomConverter.Settings);
+        public static Profile FromJson(string json) => JsonConvert.DeserializeObject<Profile>(json, CustomJsonConverter.Settings);
     }
 
     public static class ProfileSerialize
     {
-        public static string ToJson(this Profile self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
+        public static string ToJson(this Profile self) => JsonConvert.SerializeObject(self, CustomJsonConverter.Settings);
     }    
 }

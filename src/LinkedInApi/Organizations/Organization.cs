@@ -53,7 +53,7 @@ namespace LinkedIn.Api.Organizations
         public string VanityName { get; set; }
 
         [JsonProperty("versionTag", NullValueHandling = NullValueHandling.Ignore)]
-        [JsonConverter(typeof(ParseStringConverter))]
+        [JsonConverter(typeof(OrganizationParseStringConverter))]
         public long? VersionTag { get; set; }
 
         [JsonProperty("website", NullValueHandling = NullValueHandling.Ignore)]
@@ -92,15 +92,15 @@ namespace LinkedIn.Api.Organizations
 
     public partial class Organization
     {
-        public static Organization FromJson(string json) => JsonConvert.DeserializeObject<Organization>(json, CustomConverter.Settings);
+        public static Organization FromJson(string json) => JsonConvert.DeserializeObject<Organization>(json, CustomJsonConverter.Settings);
     }
 
-    public static class Serialize
+    public static class OrganizationSerialize
     {
-        public static string ToJson(this Organization self) => JsonConvert.SerializeObject(self, CustomConverter.Settings);
+        public static string ToJson(this Organization self) => JsonConvert.SerializeObject(self, CustomJsonConverter.Settings);
     }   
 
-    internal class ParseStringConverter : JsonConverter
+    internal class OrganizationParseStringConverter : JsonConverter
     {
         public override bool CanConvert(Type t) => t == typeof(long) || t == typeof(long?);
 
@@ -128,6 +128,6 @@ namespace LinkedIn.Api.Organizations
             return;
         }
 
-        public static readonly ParseStringConverter Singleton = new ParseStringConverter();
+        public static readonly OrganizationParseStringConverter Singleton = new OrganizationParseStringConverter();
     }
 }
