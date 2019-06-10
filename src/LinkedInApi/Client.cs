@@ -123,21 +123,13 @@ namespace LinkedIn.Api
         {
             var selfProfile = await GetOwnProfileAsync();
             share.Owner = $"urn:li:person:{selfProfile.Id}";
-            var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
-
-            if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+            await PostShareAsync(share);
         }
 
         public async Task PostOnCompanyProfileAsync(Share share, string ownCompanyId)
         {
             share.Owner = $"urn:li:organization:{ownCompanyId}";
-            var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
-
-            if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+            await PostShareAsync(share);
         }
 
         /// <summary>
@@ -148,15 +140,8 @@ namespace LinkedIn.Api
         public async Task<EntityElements<Share>> GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
         {
             var selfProfile = await GetOwnProfileAsync();
-            var owner = $"urn:li:person:{selfProfile.Id}";
-            var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var shares = EntityElements<Share>.FromJson(responseJson);
-            
-            if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(responseJson));
-
-            return shares;
+            var owner = $"urn:li:person:{selfProfile.Id}";           
+            return await GetPostsAsync(owner, sharesPerOwner);
         }
 
         /// <summary>
@@ -167,15 +152,8 @@ namespace LinkedIn.Api
         /// <returns></returns>
         public async Task<EntityElements<Share>> GetPostsOnCompanyProfileAsync(string ownCompanyId, int sharesPerOwner = 100)
         {
-            var owner = $"urn:li:organization:{ownCompanyId}";
-            var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
-            var responseJson = await response.Content.ReadAsStringAsync();
-            var shares = EntityElements<Share>.FromJson(responseJson);
-
-            if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(responseJson));
-
-            return shares;
+            var owner = $"urn:li:organization:{ownCompanyId}";         
+            return await GetPostsAsync(owner, sharesPerOwner);
         }
 
         private void CheckTokenThenAddToHeaders()
@@ -189,6 +167,29 @@ namespace LinkedIn.Api
             {
                 _client.DefaultRequestHeaders.Connection.Add("Keep-Alive");
             }
+        }
+
+        private async Task<EntityElements<Share>> GetPostsAsync(string ownerURN, int sharesPerOwner = 100)
+        {
+            CheckTokenThenAddToHeaders();
+            var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={ownerURN}&sharesPerOwner={sharesPerOwner}");
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var shares = EntityElements<Share>.FromJson(responseJson);
+
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(responseJson));
+
+            return shares;
+        }
+
+        public async Task PostShareAsync(Share share)
+        {
+            CheckTokenThenAddToHeaders();
+            var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
+
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
         }
     }
 }
