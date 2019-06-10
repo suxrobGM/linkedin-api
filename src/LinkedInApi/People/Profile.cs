@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Globalization;
 
 namespace LinkedIn.Api.People
 {
@@ -66,25 +64,11 @@ namespace LinkedIn.Api.People
 
     public partial class Profile
     {
-        public static Profile FromJson(string json) => JsonConvert.DeserializeObject<Profile>(json, Converter.Settings);
+        public static Profile FromJson(string json) => JsonConvert.DeserializeObject<Profile>(json, JsonConverter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this Profile self) => JsonConvert.SerializeObject(self, Converter.Settings);
-    }
-
-    internal static class Converter
-    {
-        public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
-        {
-            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-            DateParseHandling = DateParseHandling.None,
-            Converters =
-            {
-                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-            },
-        };
-    }
-
+        public static string ToJson(this Profile self) => JsonConvert.SerializeObject(self, JsonConverter.Settings);
+    }    
 }

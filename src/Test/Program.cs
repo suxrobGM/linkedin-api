@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using LinkedIn.Api;
 using LinkedIn.Api.SocialAction;
@@ -20,9 +19,10 @@ namespace Test
             //client.GetAccessTokenAsync(authCode).Wait();
             //client.GetOwnProfileAsync().Wait();
             //client.GetCompaniesAsync().Wait();
-            string shareJson = File.ReadAllText("ShareJson.txt");
-            ShareRequest share = ShareRequest.FromJson(shareJson);
-            client.PostOnOwnProfileAsync(share).Wait();
+            //string shareJson = File.ReadAllText("ShareJson.txt");
+            //var share = Share.FromJson(shareJson);
+            //client.PostOnOwnProfileAsync(share).Wait();
+            //client.GetPostsOnOwnProfileAsync().Wait();
 
             Console.WriteLine("\nFinished!");
             Console.ReadKey();

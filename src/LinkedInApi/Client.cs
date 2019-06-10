@@ -1,4 +1,5 @@
-﻿using LinkedIn.Api.People;
+﻿using LinkedIn.Api.Exceptions;
+using LinkedIn.Api.People;
 using LinkedIn.Api.SocialAction;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -56,6 +57,10 @@ namespace LinkedIn.Api
             };
 
             var response = await _client.SendAsync(requestMessage);
+
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+
             var responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
             Token = responseJson["access_token"].ToString();
             CheckTokenThenAddToHeaders();
@@ -68,7 +73,11 @@ namespace LinkedIn.Api
             CheckTokenThenAddToHeaders();
             var response = await _client.GetAsync($"{_apiHost}v2/me");
             var jsonData = await response.Content.ReadAsStringAsync();
-            var profile = JsonConvert.DeserializeObject<Profile>(jsonData);
+            var profile = Profile.FromJson(jsonData);
+
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+
             return profile;
         }
 
@@ -81,16 +90,15 @@ namespace LinkedIn.Api
         //    return JObject.Parse(await response.Content.ReadAsStringAsync());
         //}
 
-        public async Task PostOnOwnProfileAsync(ShareRequest share)
+        public async Task PostOnOwnProfileAsync(Share share)
         {
             var selfProfile = await GetOwnProfileAsync();
             share.Owner = $"urn:li:person:{selfProfile.Id}";
             var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
-            var responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var response = await _client.PostAsync($"{_apiHost}v2/shares1", content);
 
-            //if (!response.IsSuccessStatusCode)
-            //    throw new Exception(responseJson[""].ToString());
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
         }
 
         //public string PostOnCompanyProfile()
@@ -98,10 +106,20 @@ namespace LinkedIn.Api
 
         //}
 
-        //public List<string> GetPostsOnOwnProfile()
-        //{
+        /// <summary>
+        /// If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.
+        /// </summary>
+        /// <param name="sharesPerOwner"></param>
+        /// <returns></returns>
+        public async Task GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
+        {
+            var selfProfile = await GetOwnProfileAsync();
+            var owner = $"urn:li:person:{selfProfile.Id}";
+            var response = await _client.GetAsync($"{_apiHost}v2/shares?q=owners&owners={owner}&sharesPerOwner={sharesPerOwner}");
 
-        //}
+            if (!response.IsSuccessStatusCode)
+                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+        }
 
         //public List<string> GetPostsOnCompanyProfile()
         //{
