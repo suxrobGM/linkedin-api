@@ -25,6 +25,12 @@ namespace LinkedIn.Api
 
         public string Token { get; set; }
 
+        /// <summary>
+        /// Create new client instance of API v2 
+        /// </summary>
+        /// <param name="clientId">Your LinkedIn app Id</param>
+        /// <param name="clientSecret">Your LinkedIn app secret</param>
+        /// <param name="redirectUrl">Your LinkedIn app redirect url</param>
         public Client(string clientId, string clientSecret, Uri redirectUrl)
         {
             _authHost = new Uri("https://www.linkedin.com");
@@ -35,11 +41,21 @@ namespace LinkedIn.Api
             _redirectUrl = redirectUrl;                       
         }
 
+        /// <summary>
+        /// Get authorization code flow (3-legged) url
+        /// </summary>
+        /// <returns></returns>
         public Uri GetAuthorizationUrl()
         {
             return new Uri($"{_authHost}oauth/v2/authorization?response_type=code&client_id={_clientId}&redirect_uri={_redirectUrl.OriginalString}&scope=r_liteprofile%20r_emailaddress%20w_member_social");
         }
 
+        /// <summary>
+        /// Get access token by auth code
+        /// </summary>
+        /// <param name="authCode">Authorization code after user approved</param>
+        /// <exception cref="ApiException"></exception>
+        /// <returns></returns>
         public async Task<string> GetAccessTokenAsync(string authCode)
         {
             var content = new FormUrlEncodedContent(new[]
@@ -69,6 +85,11 @@ namespace LinkedIn.Api
             return Token;
         }
 
+        /// <summary>
+        /// Get information about authorized user, if your access token invalid you will get ApiException error
+        /// </summary>
+        /// <exception cref="ApiException"></exception>
+        /// <returns></returns>
         public async Task<Profile> GetOwnProfileAsync()
         {
             CheckTokenThenAddToHeaders();
@@ -82,6 +103,11 @@ namespace LinkedIn.Api
             return profile;
         }
 
+        /// <summary>
+        /// Get list of companies which authorized user have approved ADMINISTRATOR role on these companies, required r_organization permission
+        /// </summary>
+        /// <exception cref="ApiException"></exception>
+        /// <returns></returns>
         public async Task<Organization[]> GetCompaniesAsync()
         {
             CheckTokenThenAddToHeaders();
@@ -119,6 +145,13 @@ namespace LinkedIn.Api
             return companiesList.ToArray();
         }
 
+        /// <summary>
+        /// Post share in authorized user profile, required w_member_social permission 
+        /// Full details see on https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares
+        /// </summary>
+        /// <param name="share"></param>
+        /// <exception cref="ApiException"></exception>
+        /// <returns></returns>
         public async Task PostOnOwnProfileAsync(Share share)
         {
             var selfProfile = await GetOwnProfileAsync();
@@ -126,6 +159,14 @@ namespace LinkedIn.Api
             await PostShareAsync(share);
         }
 
+        /// <summary>
+        /// Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
+        /// Full details see on https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares
+        /// </summary>
+        /// <param name="share"></param>
+        /// <param name="ownCompanyId">Company id which user have ADMINISTRATOR or DIRECT_SPONSORED_CONTENT_POSTER or RECRUITING_POSTER role</param>
+        /// <exception cref="ApiException"></exception>
+        /// <returns></returns>
         public async Task PostOnCompanyProfileAsync(Share share, string ownCompanyId)
         {
             share.Owner = $"urn:li:organization:{ownCompanyId}";
@@ -133,10 +174,11 @@ namespace LinkedIn.Api
         }
 
         /// <summary>
-        /// If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.
+        /// Get list of shares in authorized user, required r_member_social permission
         /// </summary>
-        /// <param name="sharesPerOwner"></param>
-        /// <returns></returns>
+        /// <param name="sharesPerOwner">If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.</param>
+        /// <exception cref="ApiException"></exception>
+        /// <returns>Elements of Share class</returns>
         public async Task<EntityElements<Share>> GetPostsOnOwnProfileAsync(int sharesPerOwner = 100)
         {
             var selfProfile = await GetOwnProfileAsync();
@@ -145,11 +187,12 @@ namespace LinkedIn.Api
         }
 
         /// <summary>
-        /// If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.
+        /// Get list of posts in company page, required r_organization_social permission
         /// </summary>
-        /// <param name="sharesPerOwner"></param>
-        /// <param name="ownCompanyId">Company id which have ADMINISTRATOR role</param>
-        /// <returns></returns>
+        /// <param name="sharesPerOwner">If you don't specify sharesPerOwner, the default is 1. That means that you only get 1 element in your result set. We recommend setting the sharesPerOwner to 1,000 and count to 50, which means the endpoint returns up to 1,000 shares per owner, while the total elements returned per response is 50. To get the next 50 of 1,000, paginate with the start query parameter.</param>
+        /// <param name="ownCompanyId">Company id which user have ADMINISTRATOR or DIRECT_SPONSORED_CONTENT_POSTER role</param>
+        /// <exception cref="ApiException"></exception>
+        /// <returns>Elements of Share class</returns>
         public async Task<EntityElements<Share>> GetPostsOnCompanyProfileAsync(string ownCompanyId, int sharesPerOwner = 100)
         {
             var owner = $"urn:li:organization:{ownCompanyId}";         
@@ -182,7 +225,7 @@ namespace LinkedIn.Api
             return shares;
         }
 
-        public async Task PostShareAsync(Share share)
+        private async Task PostShareAsync(Share share)
         {
             CheckTokenThenAddToHeaders();
             var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");

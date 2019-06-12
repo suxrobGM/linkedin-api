@@ -3,9 +3,10 @@
 
 ## Quick start
 For fully using all profile and organization APIs you app should be have following permissions:
-- r_liteprofile - Required to retrieve name and photo for the authenticated user.
 - w_member_social - Post, comment and like posts on behalf of an authenticated member.
+- r_member_social - Retrieve posts, comments, and likes on behalf of an authenticated member. This permission is granted to select developers only.
 - w_organization_social - Post, comment and like posts on behalf of an organization. Restricted to organizations in which the authenticated member has one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
+- r_organization_social - Retrieve organizations' posts, comments, and likes. Restricted to organizations in which the authenticated member has one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER
 
 
 You can use api client by using class `LinkedIn.Api.Client`
@@ -29,7 +30,7 @@ Profile user = await client.GetOwnProfileAsync();
 // Get list of companies which authorized user have approved ADMINISTRATOR role on these companies, required r_organization permission
 Organization[] organizations = await client.GetCompaniesAsync();
 
-// Post share in authorized user, required w_member_social permission
+// Post share in authorized user profile, required w_member_social permission
 Share newPost = Share.FromJson(jsonData); // or with new Share() { } with required properties, for full details see https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares
 await client.PostOnOwnProfileAsync(newPost);
 
@@ -37,10 +38,10 @@ await client.PostOnOwnProfileAsync(newPost);
 Share newPost = Share.FromJson(jsonData);
 await client.GetPostsOnCompanyProfileAsync(newPost, "COMPANY_ID");
 
-// Get list of shares in authorized user
+// Get list of shares in authorized user, required r_member_social permission
 EntityElements<Share> shares = await client.GetPostsOnOwnProfileAsync();
 
-// Get list of posts in company page
+// Get list of posts in company page, required r_organization_social permission
 EntityElements<Share> companyShares = await client.GetPostsOnCompanyProfileAsync("COMPANY_ID");
 ````
 
