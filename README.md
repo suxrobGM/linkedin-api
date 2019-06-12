@@ -25,5 +25,22 @@ client.Token = "YOUR_ACCESS_TOKEN";
 
 // Get data information about authorized user, if your access token invalid you will get ApiException error
 Profile user = await client.GetOwnProfileAsync();
+
+// Get list of companies which authorized user have approved ADMINISTRATOR role on these companies, required r_organization permission
+Organization[] organizations = await client.GetCompaniesAsync();
+
+// Post share in authorized user, required w_member_social permission
+Share newPost = Share.FromJson(jsonData); // or with new Share() { } with required properties, for full details see https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares
+await client.PostOnOwnProfileAsync(newPost);
+
+// Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
+Share newPost = Share.FromJson(jsonData);
+await client.GetPostsOnCompanyProfileAsync(newPost, "COMPANY_ID");
+
+// Get list of shares in authorized user
+EntityElements<Share> shares = await client.GetPostsOnOwnProfileAsync();
+
+// Get list of posts in company page
+EntityElements<Share> companyShares = await client.GetPostsOnCompanyProfileAsync("COMPANY_ID");
 ````
 
