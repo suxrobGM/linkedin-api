@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace LinkedIn.Api.SocialActions
 {
@@ -34,12 +35,30 @@ namespace LinkedIn.Api.SocialActions
 
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public Text Text { get; set; }
+
+        public string ToRequestJson()
+        {           
+            var requestShare = new Share()
+            {
+                Content = this.Content,
+                Distribution = this.Distribution,
+                Owner = this.Owner,
+                Subject = this.Subject,
+                Text = this.Text
+            };
+            return requestShare.ToJson();         
+        }
     }
 
     public partial class Content
     {
+        public Content()
+        {
+            ContentEntities = new List<ContentEntity>();
+        }
+
         [JsonProperty("contentEntities", NullValueHandling = NullValueHandling.Ignore)]
-        public ContentEntity[] ContentEntities { get; set; }
+        public List<ContentEntity> ContentEntities { get; set; }
 
         [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
         public string Title { get; set; }
@@ -47,11 +66,16 @@ namespace LinkedIn.Api.SocialActions
 
     public partial class ContentEntity
     {
+        public ContentEntity()
+        {
+            Thumbnails = new List<Thumbnail>();
+        }
+
         [JsonProperty("entityLocation", NullValueHandling = NullValueHandling.Ignore)]
         public Uri EntityLocation { get; set; }
 
         [JsonProperty("thumbnails", NullValueHandling = NullValueHandling.Ignore)]
-        public Thumbnail[] Thumbnails { get; set; }
+        public List<Thumbnail> Thumbnails { get; set; }
     }
 
     public partial class Thumbnail
