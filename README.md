@@ -14,9 +14,10 @@ You can use api client by using class `LinkedIn.Api.Client`
 ### Example
 ````csharp
 Client client = new Client("YOUR_APP_ID", "YOUR_APP_SECRET", new Uri("https://your-app-redirect-url.com"));
+string[] permissions = new string[] { "r_liteprofile", "r_emailaddress", "w_member_social" };
 
 // To get 3-legged authorization url use GetAuthorizationUrl method
-string authUrl = client.GetAuthorizationUrl();
+string authUrl = client.GetAuthorizationUrl(permissions);
 
 // To get access token use GetAccessTokenAsync method
 string token = await client.GetAccessTokenAsync("AUTHORIZATION_CODE");
