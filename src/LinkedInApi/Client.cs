@@ -44,10 +44,28 @@ namespace LinkedIn.Api
         /// <summary>
         /// Get authorization code flow (3-legged) url
         /// </summary>
+        /// <param name="permissions">Provide list of permissions</param>
+        /// <param name="withState">Enable state argument in url query. State is a unique string value of guid that is hard to guess. Used to prevent CSRF</param>
         /// <returns></returns>
-        public Uri GetAuthorizationUrl()
+        public Uri GetAuthorizationUrl(string[] permissions, bool withState = false)
         {
-            return new Uri($"{_authHost}oauth/v2/authorization?response_type=code&client_id={_clientId}&redirect_uri={_redirectUrl.OriginalString}&scope=r_liteprofile%20r_emailaddress%20w_member_social");
+            var permissionsList = new StringBuilder();
+            for (int i = 0; i < permissions.Length; i++)
+            {
+                if (i == permissions.Length - 1)
+                {
+                    permissionsList.Append(permissions[i]);
+                }
+                else
+                {
+                    permissionsList.Append(permissions[i] + "%20");
+                }                
+            }           
+
+            if (withState)
+                return new Uri($"{_authHost}oauth/v2/authorization?response_type=code&state={Guid.NewGuid()}&client_id={_clientId}&redirect_uri={_redirectUrl.OriginalString}&scope={permissionsList}");
+
+            return new Uri($"{_authHost}oauth/v2/authorization?response_type=code&client_id={_clientId}&redirect_uri={_redirectUrl.OriginalString}&scope={permissionsList}");
         }
 
         /// <summary>
