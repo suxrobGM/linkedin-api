@@ -173,7 +173,7 @@ namespace LinkedIn.Api
         public async Task PostOnOwnProfileAsync(Share share)
         {
             var selfProfile = await GetOwnProfileAsync();
-            share.Owner = $"urn:li:person:{selfProfile.Id}";
+            share.OwnerUrn = $"urn:li:person:{selfProfile.Id}";
             await PostShareAsync(share);
         }
 
@@ -187,7 +187,7 @@ namespace LinkedIn.Api
         /// <returns></returns>
         public async Task PostOnCompanyProfileAsync(Share share, string ownCompanyId)
         {
-            share.Owner = $"urn:li:organization:{ownCompanyId}";
+            share.OwnerUrn = $"urn:li:organization:{ownCompanyId}";
             await PostShareAsync(share);
         }
 
@@ -216,6 +216,8 @@ namespace LinkedIn.Api
             var owner = $"urn:li:organization:{ownCompanyId}";         
             return await GetPostsAsync(owner, sharesPerOwner);
         }
+
+        public async Task<string>
 
         private void CheckTokenThenAddToHeaders()
         {
