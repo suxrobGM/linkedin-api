@@ -177,12 +177,7 @@ namespace LinkedIn.Api.SocialActions
     }
 
     public partial class ContentEntity
-    {
-        public ContentEntity()
-        {
-            Thumbnails = new List<ShareThumbnails>();
-        }
-
+    {       
         /// <summary>
         /// URN of the content being shared. Typical URN format is urn:li:richMediaSummary:{id}.
         /// Required for Request: Required for rich media shares. Not allowed otherwise.
