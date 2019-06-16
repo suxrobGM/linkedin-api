@@ -39,10 +39,11 @@ EntityElements<Share> companyShares = await client.GetPostsOnCompanyProfileAsync
 ````
 
 ### Example how to post shares in own profile 
-To post on own profile needs w_member_social permission
+To post share on own profile you need w_member_social permission
 Also you can see full details on [Microsoft documentation](https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares)
 
-Method 1: post share with existing json data
+Method 1: post share with existing json data.
+
 For example we have followed json data for request:
 ````json
 {
@@ -77,10 +78,12 @@ await client.PostOnOwnProfileAsync(newPost);
 ````
 
 Method 2: post with `LinkedIn.Api.SocialActions.Share` class
-We can create share programatically then will post on LinkedIn
+
+We can programatically create share then will post on LinkedIn
+
 For example:
 ````csharp
-var contentEntity = new ContentEntity();
+var contentEntity = new ContentEntity(); //share content
 contentEntity.Thumbnails = new List<ShareThumbnails>();
 contentEntity.EntityLocation = new Uri("https://www.example.com/content.html");
 contentEntity.Thumbnails.Add(new ShareThumbnails() { ResolvedUrl = new Uri("https://www.example.com/image.jpg") });
@@ -98,7 +101,8 @@ share.Text.Content = "Test Share!";
 await client.PostOnOwnProfileAsync(share);
 ````
 
-Posting on company it similar  like posting on own profile. But required w_organization_social permission 
+Posting on company it similar like posting on own profile. But required w_organization_social permission
+
 For example:
 ````csharp
 // Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
