@@ -39,7 +39,7 @@ EntityElements<Share> companyShares = await client.GetPostsOnCompanyProfileAsync
 ````
 
 ### Example how to post shares in own profile 
-To post share on own profile you need w_member_social permission
+To post share on own profile you need w_member_social permission.
 Also you can see full details on [Microsoft documentation](https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares)
 
 Method 1: post share with existing json data.
@@ -63,7 +63,6 @@ For example we have followed json data for request:
     "distribution": {
         "linkedInDistributionTarget": {}
     },
-    "owner": "urn:li:person:324_kGGaLE",
     "subject": "Test Share Subject",
     "text": {
         "text": "Test Share!"
