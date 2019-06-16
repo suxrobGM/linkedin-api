@@ -7,11 +7,16 @@ namespace LinkedIn.Api.SocialActions
 {
     public partial class RichMedia
     {
+        public RichMedia()
+        {
+            MediaThumbnails = new List<Media>();
+        }
+
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         [JsonProperty("thumbnails", NullValueHandling = NullValueHandling.Ignore)]
-        public Thumbnails<Media> Medias { get; set; }
+        public List<Media> MediaThumbnails { get; set; }
 
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public string LocationUrn { get; set; }

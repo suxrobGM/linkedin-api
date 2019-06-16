@@ -217,7 +217,7 @@ namespace LinkedIn.Api
             return await GetPostsAsync(owner, sharesPerOwner);
         }
 
-        public async Task<string>
+        //public async Task<string>
 
         private void CheckTokenThenAddToHeaders()
         {

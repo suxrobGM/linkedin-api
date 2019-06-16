@@ -18,31 +18,31 @@ namespace LinkedIn.Api.SocialActions
     {
         /// <summary>
         /// Unique ID for the share.
-        /// Guaranteed in Response: Yes
-        /// Required for Request: No
+        /// Guaranteed in Response: Yes.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
         public string Id { get; set; }
 
         /// <summary>
         /// URN of the activity associated with this share. This value is not present for video shares and historic shares.
-        /// Guaranteed in Response: No
-        /// Required for Request: No
+        /// Guaranteed in Response: No.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("activity", NullValueHandling = NullValueHandling.Ignore)]
         public string ActivityUrn { get; set; }
 
         /// <summary>
         /// Agent is the Sponsored Ad Account that created the Direct Sponsored Content Share on behalf of an organization. This permission has to be delegated. Returns a sponsored Account URN for Direct Sponsored Content shares.
-        /// Guaranteed in Response: No
+        /// Guaranteed in Response: No.
         /// Required for Request: Yes if only used for direct sponsored content organization share.
         /// </summary>
         [JsonProperty("agent", NullValueHandling = NullValueHandling.Ignore)]
         public string AgentUrn { get; set; }
 
         /// <summary>
-        /// Referenced content such as articles and images
-        /// Guaranteed in Response: No
+        /// Referenced content such as articles and images.
+        /// Guaranteed in Response: No.
         /// Required for Request: Required if text is empty.
         /// </summary>
         [JsonProperty("content", NullValueHandling = NullValueHandling.Ignore)]
@@ -50,15 +50,15 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// Time of creation.
-        /// Guaranteed in Response: Yes
-        /// Required for Request: No
+        /// Guaranteed in Response: Yes.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("created", NullValueHandling = NullValueHandling.Ignore)]
         public AuditStamp Created { get; set; }
 
         /// <summary>
         /// Distribution target for the share.
-        /// Guaranteed in Response: Yes
+        /// Guaranteed in Response: Yes.
         /// Required for Request: Required to set the share as publicly visible. For sponsored content where the targeting is defined when it is sponsored, distribution should be null.
         /// </summary>
         [JsonProperty("distribution", NullValueHandling = NullValueHandling.Ignore)]
@@ -66,23 +66,23 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// A flag that indicates if this share was edited by a member.
-        /// Guaranteed in Response: Yes
-        /// Required for Request: No
+        /// Guaranteed in Response: Yes.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("edited", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Edited { get; set; }
 
         /// <summary>
         /// Time of last modification.
-        /// Guaranteed in Response: Yes
-        /// Required for Request: No
+        /// Guaranteed in Response: Yes.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("lastModified", NullValueHandling = NullValueHandling.Ignore)]
         public AuditStamp LastModified { get; set; }
 
         /// <summary>
-        /// Share being reshared
-        /// Guaranteed in Response: No
+        /// Share being reshared.
+        /// Guaranteed in Response: No.
         /// Required for Request: Required when resharing. Not allowed otherwise.
         /// </summary>
         [JsonProperty("resharedShare", NullValueHandling = NullValueHandling.Ignore)]
@@ -90,7 +90,7 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// If this share is a reshare, then this is the URN of the original/root share that was reshared.
-        /// Guaranteed in Response: No
+        /// Guaranteed in Response: No.
         /// Required for Request: Required when resharing. Not allowed otherwise.
         /// </summary>
         [JsonProperty("originalShare", NullValueHandling = NullValueHandling.Ignore)]
@@ -98,15 +98,15 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// URN of the owner of the share.
-        /// Guaranteed in Response: Yes
-        /// Required for Request: No
+        /// Guaranteed in Response: Yes.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("owner", NullValueHandling = NullValueHandling.Ignore)]
         public string OwnerUrn { get; set; }
 
         /// <summary>
         /// Share subject.
-        /// Guaranteed in Response: Yes
+        /// Guaranteed in Response: Yes.
         /// Required for Request: Required for direct sponsored shares.
         /// </summary>
         [JsonProperty("subject", NullValueHandling = NullValueHandling.Ignore)]
@@ -114,7 +114,7 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// Text entered by the member for this share, which may contain annotations.
-        /// Guaranteed in Response: Yes
+        /// Guaranteed in Response: Yes.
         /// Required for Request: Required if content is empty.
         /// </summary>
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
@@ -149,28 +149,28 @@ namespace LinkedIn.Api.SocialActions
 
         /// <summary>
         /// Details of content being shared.
-        /// Required for Request: No
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("contentEntities", NullValueHandling = NullValueHandling.Ignore)]
         public List<ContentEntity> ContentEntities { get; set; }
 
         /// <summary>
-        /// Content title. Maximum of 400 characters; recommended length is <70 characters.
-        /// Required for Request: No
+        /// Content title. Maximum of 400 characters; recommended length is < 70 characters.
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
         public string Title { get; set; }
 
         /// <summary>
         /// Content description. This field is displayed to a small percentage of members on the mobile web version of the site. It is not displayed on the desktop site or native mobile apps. Maximum of 256 characters.
-        /// Required for Request: No 
+        /// Required for Request: No.
         /// </summary>
         [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
         public string Description { get; set; }
 
         /// <summary>
         /// The type of media represented by contentEntities. Must correspond to the URN types in contentEntities
-        /// Required for Request: Optional
+        /// Required for Request: Optional.
         /// </summary>
         [JsonProperty("shareMediaCategory", NullValueHandling = NullValueHandling.Ignore)]
         public ShareMediaCategory ShareMediaCategory { get; set; }
@@ -178,6 +178,11 @@ namespace LinkedIn.Api.SocialActions
 
     public partial class ContentEntity
     {
+        public ContentEntity()
+        {
+            Thumbnails = new List<ShareThumbnails>();
+        }
+
         /// <summary>
         /// URN of the content being shared. Typical URN format is urn:li:richMediaSummary:{id}.
         /// Required for Request: Required for rich media shares. Not allowed otherwise.
@@ -193,7 +198,7 @@ namespace LinkedIn.Api.SocialActions
         public Uri EntityLocation { get; set; }
 
         [JsonProperty("thumbnails", NullValueHandling = NullValueHandling.Ignore)]
-        public Thumbnails<ShareThumbnails> Thumbnails { get; set; }
+        public List<ShareThumbnails> Thumbnails { get; set; }
     }
 
     public partial class ShareThumbnails
