@@ -20,5 +20,8 @@ namespace LinkedIn.Api.SocialActions
 
         [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
         public string LocationUrn { get; set; }
+
+        public string ToJson() => JsonConvert.SerializeObject(this, CustomJsonConverter.Settings);
+        public static RichMedia FromJson(string json) => JsonConvert.DeserializeObject<RichMedia>(json, CustomJsonConverter.Settings);
     }
 }

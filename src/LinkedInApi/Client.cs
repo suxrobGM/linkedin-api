@@ -5,6 +5,7 @@ using LinkedIn.Api.SocialActions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -217,7 +218,22 @@ namespace LinkedIn.Api
             return await GetPostsAsync(owner, sharesPerOwner);
         }
 
-        //public async Task<string>
+        public async Task<RichMedia> UploadRichMedia(string filePath)
+        {           
+            CheckTokenThenAddToHeaders();
+            var content = new MultipartFormDataContent();
+            using (var file = new FileStream(path: filePath, mode: FileMode.Open))
+            {
+                content.Add(new StreamContent(file), "fileupload");
+                var response = await _client.PostAsync($"{_apiHost}media/upload", content);
+                var responseJson = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                    throw new ApiException(ExceptionModel.FromJson(responseJson));
+
+                return RichMedia.FromJson(responseJson);
+            }                       
+        }
 
         private void CheckTokenThenAddToHeaders()
         {
