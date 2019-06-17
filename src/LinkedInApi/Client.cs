@@ -24,7 +24,7 @@ namespace LinkedIn.Api
         private Uri _redirectUrl;
         private HttpClient _client;
 
-        public string Token { get; set; }
+        public AccessToken AccessToken { get; set; }
 
         /// <summary>
         /// Create new client instance of API v2 
@@ -39,7 +39,8 @@ namespace LinkedIn.Api
             _client = new HttpClient();
             _clientId = clientId;
             _clientSecret = clientSecret;
-            _redirectUrl = redirectUrl;                       
+            _redirectUrl = redirectUrl;
+            AccessToken = new AccessToken();
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace LinkedIn.Api
                 throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
 
             var accessToken = AccessToken.FromJson(await response.Content.ReadAsStringAsync());
-            Token = accessToken.Token;
+            AccessToken = accessToken;
             CheckTokenThenAddToHeaders();
 
             return accessToken;
@@ -237,9 +238,9 @@ namespace LinkedIn.Api
 
         private void CheckTokenThenAddToHeaders()
         {
-            if (_client.DefaultRequestHeaders.Authorization == null && !string.IsNullOrEmpty(Token))
+            if (_client.DefaultRequestHeaders.Authorization == null && !string.IsNullOrEmpty(AccessToken.Token))
             {
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AccessToken.Token);
             }
 
             if (!_client.DefaultRequestHeaders.Connection.Contains("Keep-Alive"))

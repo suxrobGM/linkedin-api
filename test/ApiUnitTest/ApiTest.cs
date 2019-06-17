@@ -15,7 +15,7 @@ namespace ApiUnitTest
         public ApiTest()
         {
             client = new Client(clientId, clientSecret, redirectUrl);
-            client.Token = token;
+            client.AccessToken = token;
         }
 
         [Fact]
