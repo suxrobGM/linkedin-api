@@ -8,16 +8,18 @@ namespace ApiUnitTest
     {
         private readonly string clientId = "YOUR_CLIENT_ID";
         private readonly string clientSecret = "YOUR_CLIENT_SECRET";
+        private readonly string token = "YOUR_ACCESS_TOKEN";
         private readonly Uri redirectUrl = new Uri("https://your-app-redirect-url.com");
         private readonly Client client;
 
         public ApiTest()
         {
             client = new Client(clientId, clientSecret, redirectUrl);
+            client.Token = token;
         }
 
         [Fact]
-        public void TestGetUrlMethod()
+        public void GetUrlMethod()
         {
             var permissions = new string[] { "r_liteprofile", "r_emailaddress", "w_member_social" };
             var authUrl = client.GetAuthorizationUrl(permissions);
@@ -44,6 +46,12 @@ namespace ApiUnitTest
                     Assert.Contains("r_liteprofile%20r_emailaddress%20w_member_social", pair[1]);
                 }
             }            
+        }
+
+        [Fact]
+        public async void GetOwnProfileMethod()
+        {
+            var profile = await client.GetOwnProfileAsync();
         }
     }
 }

@@ -75,7 +75,7 @@ namespace LinkedIn.Api
         /// <param name="authCode">Authorization code after user approved</param>
         /// <exception cref="ApiException"></exception>
         /// <returns></returns>
-        public async Task<string> GetAccessTokenAsync(string authCode)
+        public async Task<AccessToken> GetAccessTokenAsync(string authCode)
         {
             var content = new FormUrlEncodedContent(new[]
             {
@@ -97,11 +97,11 @@ namespace LinkedIn.Api
             if (!response.IsSuccessStatusCode)
                 throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
 
-            var responseJson = JObject.Parse(await response.Content.ReadAsStringAsync());
-            Token = responseJson["access_token"].ToString();
+            var accessToken = AccessToken.FromJson(await response.Content.ReadAsStringAsync());
+            Token = accessToken.Token;
             CheckTokenThenAddToHeaders();
 
-            return Token;
+            return accessToken;
         }
 
         /// <summary>
@@ -170,26 +170,26 @@ namespace LinkedIn.Api
         /// </summary>
         /// <param name="share"></param>
         /// <exception cref="ApiException"></exception>
-        /// <returns></returns>
-        public async Task PostOnOwnProfileAsync(Share share)
+        /// <returns>Response of requested share</returns>
+        public async Task<Share> PostOnOwnProfileAsync(Share share)
         {
             var selfProfile = await GetOwnProfileAsync();
             share.OwnerUrn = $"urn:li:person:{selfProfile.Id}";
-            await PostShareAsync(share);
+            return await PostShareAsync(share);
         }
 
         /// <summary>
-        /// Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
+        /// Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER.
         /// Full details see on https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares
         /// </summary>
         /// <param name="share"></param>
         /// <param name="ownCompanyId">Company id which user have ADMINISTRATOR or DIRECT_SPONSORED_CONTENT_POSTER or RECRUITING_POSTER role</param>
         /// <exception cref="ApiException"></exception>
-        /// <returns></returns>
-        public async Task PostOnCompanyProfileAsync(Share share, string ownCompanyId)
+        /// <returns>Response of requested share</returns>
+        public async Task<Share> PostOnCompanyProfileAsync(Share share, string ownCompanyId)
         {
             share.OwnerUrn = $"urn:li:organization:{ownCompanyId}";
-            await PostShareAsync(share);
+            return await PostShareAsync(share);
         }
 
         /// <summary>
@@ -261,14 +261,17 @@ namespace LinkedIn.Api
             return shares;
         }
 
-        private async Task PostShareAsync(Share share)
+        private async Task<Share> PostShareAsync(Share share)
         {
             CheckTokenThenAddToHeaders();
             var content = new StringContent(share.ToRequestJson(), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
+            var responseJson = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
-                throw new ApiException(ExceptionModel.FromJson(await response.Content.ReadAsStringAsync()));
+                throw new ApiException(ExceptionModel.FromJson(responseJson));
+
+            return Share.FromJson(responseJson);
         }
     }
 }

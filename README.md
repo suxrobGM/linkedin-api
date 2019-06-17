@@ -72,8 +72,8 @@ For example we have followed json data for request:
 
 ````csharp
 // Post share in authorized user profile, required w_member_social permission
-Share newPost = Share.FromJson(jsonData); 
-await client.PostOnOwnProfileAsync(newPost);
+Share share = Share.FromJson(jsonData); 
+Share postedShare = await client.PostOnOwnProfileAsync(share);
 ````
 
 Method 2: post with `LinkedIn.Api.SocialActions.Share` class
@@ -97,7 +97,7 @@ share.Subject = "Test Share Subject";
 share.Text = new ShareText();
 share.Text.Content = "Test Share!";
 
-await client.PostOnOwnProfileAsync(share);
+var postedShare = await client.PostOnOwnProfileAsync(share);
 ````
 
 Posting on company it similar like posting on own profile. But required w_organization_social permission
@@ -106,5 +106,5 @@ For example:
 ````csharp
 // Post share in organiztion page, required w_organization_social permission also user should be have one of the following company page roles: ADMINISTRATOR, DIRECT_SPONSORED_CONTENT_POSTER, RECRUITING_POSTER
 Share newPost = Share.FromJson(jsonData);
-await client.GetPostsOnCompanyProfileAsync(newPost, "COMPANY_ID");
+Share postedShare = await client.PostOnCompanyProfileAsync(newPost, "COMPANY_ID");
 ````
