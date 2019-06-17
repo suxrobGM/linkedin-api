@@ -23,7 +23,7 @@ string authUrl = client.GetAuthorizationUrl(permissions);
 string token = await client.GetAccessTokenAsync("AUTHORIZATION_CODE");
 
 // Or you can use existing access token by setting Token property
-client.Token = "YOUR_ACCESS_TOKEN";
+client.AccessToken = "YOUR_ACCESS_TOKEN";
 
 // Get data information about authorized user, if your access token invalid you will get ApiException error
 Profile user = await client.GetOwnProfileAsync();

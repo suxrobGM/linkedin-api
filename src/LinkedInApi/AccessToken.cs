@@ -13,12 +13,8 @@ namespace LinkedIn.Api
         [JsonProperty("expires_in", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime ExpiresIn { get; set; }
 
-        public static implicit operator AccessToken(string token)
-        {
-            return new AccessToken() { Token = token };
-        }
-
         public string ToJson() => JsonConvert.SerializeObject(this, CustomJsonConverter.Settings);
         public static AccessToken FromJson(string json) => JsonConvert.DeserializeObject<AccessToken>(json, CustomJsonConverter.Settings);
+        public static implicit operator AccessToken(string token) => new AccessToken() { Token = token };
     }
 }
