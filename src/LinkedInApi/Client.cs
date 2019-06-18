@@ -264,8 +264,8 @@ namespace LinkedIn.Api
 
         private async Task<Share> PostShareAsync(Share share)
         {
-            CheckTokenThenAddToHeaders();
-            var content = new StringContent(share.ToRequestJson(), Encoding.UTF8, "application/json");
+            CheckTokenThenAddToHeaders();           
+            var content = new StringContent(share.ToJson(), Encoding.UTF8, "application/json");
             var response = await _client.PostAsync($"{_apiHost}v2/shares", content);
             var responseJson = await response.Content.ReadAsStringAsync();
 

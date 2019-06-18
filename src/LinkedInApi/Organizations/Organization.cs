@@ -58,6 +58,9 @@ namespace LinkedIn.Api.Organizations
 
         [JsonProperty("website", NullValueHandling = NullValueHandling.Ignore)]
         public Description Website { get; set; }
+
+        public string ToJson() => JsonConvert.SerializeObject(this, CustomJsonConverter.Settings);
+        public static Organization FromJson(string json) => JsonConvert.DeserializeObject<Organization>(json, CustomJsonConverter.Settings);
     }
 
     public partial class Locale
@@ -89,16 +92,6 @@ namespace LinkedIn.Api.Organizations
         [JsonProperty("parent", NullValueHandling = NullValueHandling.Ignore)]
         public string Parent { get; set; }
     }
-
-    public partial class Organization
-    {
-        public static Organization FromJson(string json) => JsonConvert.DeserializeObject<Organization>(json, CustomJsonConverter.Settings);
-    }
-
-    public static class OrganizationSerialize
-    {
-        public static string ToJson(this Organization self) => JsonConvert.SerializeObject(self, CustomJsonConverter.Settings);
-    }   
 
     internal class OrganizationParseStringConverter : JsonConverter
     {

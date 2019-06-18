@@ -4,16 +4,6 @@ using System.Collections.Generic;
 
 namespace LinkedIn.Api.SocialActions
 {
-    public enum ShareMediaCategory
-    {
-        NONE,
-        ARTICLE,
-        IMAGE,
-        RICH,
-        VIDEO,
-        CAROUSEL
-    }
-
     public partial class Share
     {
         /// <summary>
@@ -119,20 +109,7 @@ namespace LinkedIn.Api.SocialActions
         /// </summary>
         [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
         public ShareText Text { get; set; }
-
-        public string ToRequestJson()
-        {           
-            var requestShare = new Share()
-            {
-                Content = this.Content,
-                Distribution = this.Distribution,
-                OwnerUrn = this.OwnerUrn,
-                Subject = this.Subject,
-                Text = this.Text
-            };
-            return requestShare.ToJson();         
-        }
-
+        
         public string ToJson() => JsonConvert.SerializeObject(this, CustomJsonConverter.Settings);
         public static Share FromJson(string json) => JsonConvert.DeserializeObject<Share>(json, CustomJsonConverter.Settings);
     }
@@ -169,11 +146,13 @@ namespace LinkedIn.Api.SocialActions
         public string Description { get; set; }
 
         /// <summary>
-        /// The type of media represented by contentEntities. Must correspond to the URN types in contentEntities
+        /// The type of media represented by contentEntities. Must correspond to the URN types in contentEntities.
+        /// Use static class of <c>ShareMediaCategory</c> to set value.
         /// Required for Request: Optional.
         /// </summary>
+        /// <example>share.Content.ShareMediaCategory = ShareMediaCategory.ARTICLE</example>
         [JsonProperty("shareMediaCategory", NullValueHandling = NullValueHandling.Ignore)]
-        public ShareMediaCategory ShareMediaCategory { get; set; }
+        public string ShareMediaCategory { get; set; }
     }
 
     public partial class ContentEntity
