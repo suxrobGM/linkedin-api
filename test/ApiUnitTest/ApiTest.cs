@@ -9,9 +9,9 @@ namespace ApiUnitTest
 {
     public class ApiTest
     {
-        private readonly string clientId = "YOUR_CLIENT_ID";
-        private readonly string clientSecret = "YOUR_CLIENT_SECRET";
-        private readonly string token = "YOUR_ACCESS_TOKEN";
+        private readonly string clientId = "77cme2vqhhzgyz";
+        private readonly string clientSecret = "Nj4oDp7u8OC9FkJt";
+        private readonly string token = "AQUrSPHI-a43ZER82wbasxt3N3PZSFvD_a-fgnNdfEDApxlUGtPMi5e_gEa3TghyjYWCCcmTo0OEt_SOmhIzbo-DPpLKFCox5uKKFvinR61gta7BemMOW5YV5F63RYZLshPXCSYhQcd1DWWWVqBuVCeyrvFDPj-WZVj3C-Nc7AEXyYfeAciR0H0-vgnqEjOyjdONRaaufM7hrg-XguzRpKyTeoTpQmdPE09O-bTC3kyKsDFA1H3zY2xklUzTTSjf2VdoboVPR4bt-507Jv-W0kuxRTQdRMQOQ7sqI5j0dIAuQiL6_S_Jr7M7s5Jw3CMiMIYPazRc_GAzsub0bt-rPVQUkBH1Hg";
         private readonly Uri redirectUrl = new Uri("https://your-app-redirect-url.com");
         private readonly Client client;
 
@@ -92,6 +92,7 @@ namespace ApiUnitTest
                             }";
 
             var share = Share.FromJson(jsonData);
+            var shareJson = share.ToJson();
             var postedShare = await client.PostOnOwnProfileAsync(share);
             var postedShareJson = postedShare.ToJson();
 
@@ -105,20 +106,20 @@ namespace ApiUnitTest
             Assert.Contains("text", postedShareJson);
         }
 
-        [Fact]
-        public async void GetCompaniesMethod()
-        {
-            var companies = await client.GetCompaniesAsync();
+        //[Fact]
+        //public async void GetCompaniesMethod()
+        //{
+        //    var companies = await client.GetCompaniesAsync();
 
-            foreach (var company in companies)
-            {
-                var companyJson = company.ToJson();
+        //    foreach (var company in companies)
+        //    {
+        //        var companyJson = company.ToJson();
 
-                Assert.Contains("id", companyJson);
-                Assert.Contains("localizedName", companyJson);
-                Assert.Contains("name", companyJson);
-                Assert.Contains("vanityName", companyJson);
-            }
-        }
+        //        Assert.Contains("id", companyJson);
+        //        Assert.Contains("localizedName", companyJson);
+        //        Assert.Contains("name", companyJson);
+        //        Assert.Contains("vanityName", companyJson);
+        //    }
+        //}
     }
 }

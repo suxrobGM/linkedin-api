@@ -219,7 +219,12 @@ namespace LinkedIn.Api
             return await GetPostsAsync(owner, sharesPerOwner);
         }
 
-        public async Task<RichMedia> UploadRichMedia(string filePath)
+        /// <summary>
+        /// To upload rich media, attach the media as multipart/form-data. Currently, only jpeg and png formats are supported. The media file size should be under 10 MB for all file types. All image files have a pixel restriction of 40,000,000, and you may only upload one media object per API call.
+        /// </summary>
+        /// <param name="filePath">Path to jpeg or png file</param>
+        /// <returns>The location of uploaded rich media (Location property of <c>RichMedia</c> class</returns>
+        public async Task<RichMedia> UploadRichMediaAsync(string filePath)
         {           
             CheckTokenThenAddToHeaders();
             var content = new MultipartFormDataContent();

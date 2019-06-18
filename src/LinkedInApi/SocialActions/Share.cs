@@ -5,7 +5,28 @@ using System.Collections.Generic;
 namespace LinkedIn.Api.SocialActions
 {
     public partial class Share
-    {
+    {       
+        /// <summary>
+        /// Create new instance of <c>Share</c> class
+        /// </summary>
+        /// <param name="useContent">Flag that indicate share will use content (external urls, articles, rich medias)</param>
+        /// <param name="useDistributionTarget">Required to set the share as publicly visible. For sponsored content where the targeting is defined when it is sponsored, distribution should be null.</param>
+        public Share(bool useContent = true, bool useDistributionTarget = true)
+        {
+            if (useContent)
+            {
+                this.Content = new ShareContent();
+            }
+                
+            if (useDistributionTarget)
+            {
+                this.Distribution = new Distribution();
+                this.Distribution.LinkedInDistributionTarget = new LinkedInDistributionTarget();
+            }
+
+            this.Text = new ShareText();
+        }
+
         /// <summary>
         /// Unique ID for the share.
         /// Guaranteed in Response: Yes.
@@ -156,7 +177,19 @@ namespace LinkedIn.Api.SocialActions
     }
 
     public partial class ContentEntity
-    {       
+    {
+        /// <summary>
+        /// Create new instance of <c>ContentEntity</c> for share class
+        /// </summary>
+        /// <param name="useThumbnails">Flag that indicate content will use thumbnails</param>
+        public ContentEntity(bool useThumbnails = true)
+        {
+            if (useThumbnails)
+            {
+                Thumbnails = new List<ShareThumbnails>();
+            }
+        }
+
         /// <summary>
         /// URN of the content being shared. Typical URN format is urn:li:richMediaSummary:{id}.
         /// Required for Request: Required for rich media shares. Not allowed otherwise.

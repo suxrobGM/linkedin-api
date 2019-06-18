@@ -83,18 +83,13 @@ We can programatically create share then will post on LinkedIn
 For example:
 ````csharp
 var contentEntity = new ContentEntity(); //share content
-contentEntity.Thumbnails = new List<ShareThumbnails>();
 contentEntity.EntityLocation = new Uri("https://www.example.com/content.html");
 contentEntity.Thumbnails.Add(new ShareThumbnails() { ResolvedUrl = new Uri("https://www.example.com/image.jpg") });
 
 var share = new Share();
-share.Content = new ShareContent();
 share.Content.ContentEntities.Add(contentEntity);
 share.Content.Title = "Test Share with Content";
-share.Distribution = new Distribution();
-share.Distribution.LinkedInDistributionTarget = new LinkedInDistributionTarget();
 share.Subject = "Test Share Subject";
-share.Text = new ShareText();
 share.Text.Content = "Test Share!";
 
 var postedShare = await client.PostOnOwnProfileAsync(share);
@@ -108,3 +103,30 @@ For example:
 Share newPost = Share.FromJson(jsonData);
 Share postedShare = await client.PostOnCompanyProfileAsync(newPost, "COMPANY_ID");
 ````
+
+### How to post rich media share?
+The Rich Media Share API allows you to upload images to reference in a personal or organization share. With this API, you can create rich and engaging personal or organization shares that appear on various feeds within the LinkedIn ecosystem. You must be a company administrator to create an organization share.
+
+To create a rich media share:
+1. Upload the media to LinkedIn's media platform.
+2. Make a personal or organization share referencing that media.
+
+Example:
+````csharp
+var uploadedMedia = await client.UploadRichMediaAsync("path/to/media/file/example.jpeg");
+
+var contentEntity = new ContentEntity(useThumbnails: false); //share content
+contentEntity.EntityUrn = uploadedMedia.LocationUrn; //add rich media urn to content entity
+
+var share = new Share();
+share.Content.ContentEntities.Add(contentEntity);
+share.Content.Description = "Content description";
+share.Content.Title = "Test Share with Content";
+share.Subject = "Test Share Subject";
+share.Text.Content = "Test Share!";
+
+var postedShare = await client.PostOnOwnProfileAsync(share);
+````
+**Note:** Rich media is deleted when a member deletes all shares referencing the media. Attempting to post a share referencing deleted media results in an error.
+
+To post a multi-image share, upload multiple images to be specified in `ContentEntities` property
