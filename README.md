@@ -38,7 +38,7 @@ EntityElements<Share> shares = await client.GetPostsOnOwnProfileAsync();
 EntityElements<Share> companyShares = await client.GetPostsOnCompanyProfileAsync("COMPANY_ID");
 ````
 
-### Example how to post shares in own profile 
+### How to post shares in own profile?
 To post share on own profile you need w_member_social permission.
 Also you can see full details on [Microsoft documentation](https://docs.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/share-api?context=linkedin/compliance/context#post-shares)
 
