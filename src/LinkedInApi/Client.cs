@@ -17,12 +17,12 @@ namespace LinkedIn.Api
 {
     public class Client
     {
-        private string _clientId;
-        private string _clientSecret;
-        private Uri _authHost;
-        private Uri _apiHost;        
-        private Uri _redirectUrl;
-        private HttpClient _client;
+        private readonly string _clientId;
+        private readonly string _clientSecret;
+        private readonly Uri _authHost;
+        private readonly Uri _apiHost;        
+        private readonly Uri _redirectUrl;
+        private readonly HttpClient _client;
 
         public AccessToken AccessToken { get; set; }
 
