@@ -20,7 +20,7 @@ string[] permissions = new string[] { "r_liteprofile", "r_emailaddress", "w_memb
 string authUrl = client.GetAuthorizationUrl(permissions);
 
 // To get access token use GetAccessTokenAsync method
-string token = await client.GetAccessTokenAsync("AUTHORIZATION_CODE");
+AccessToken token = await client.GetAccessTokenAsync("AUTHORIZATION_CODE");
 
 // Or you can use existing access token by setting Token property
 client.AccessToken = "YOUR_ACCESS_TOKEN";
