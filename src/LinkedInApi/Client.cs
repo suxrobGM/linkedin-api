@@ -2,7 +2,6 @@
 using LinkedIn.Api.Organizations;
 using LinkedIn.Api.People;
 using LinkedIn.Api.SocialActions;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;

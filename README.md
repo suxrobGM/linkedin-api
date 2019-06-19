@@ -1,4 +1,4 @@
-# LinkedInApi
+# LinkedIn API v2
 .NET wrapper of LinkedIn API v2
 
 ## Quick start
